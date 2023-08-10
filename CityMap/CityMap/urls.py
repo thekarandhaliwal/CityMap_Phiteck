@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from map.views import Index, convert_html_to_pdf, CityMap
+from map import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index, name="Index"),
-    path('CityMap', CityMap, name="CityMap"),
+    path('CityMap', views.CityMap.as_view(), name="CityMap"),
     path('convert_html_to_pdf', convert_html_to_pdf, name="convert_html_to_pdf"),
 ]
