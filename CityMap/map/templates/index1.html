@@ -1,0 +1,2051 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapiful Editor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.16/web.js"></script>
+    <script src="https://js.sentry-cdn.com/9c5feb5b248b49f79a585804c259febc.min.js" crossorigin="anonymous"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css">
+    <link href='https://watergis.github.io/mapbox-gl-export/mapbox-gl-export.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/d913767af0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" />
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+    <style>
+        /* .canvas-container {
+            display: none !important;
+        } */
+        .new-hidden-map .mapboxgl-canvas-container .mapboxgl-canvas {
+            margin-left: 0px;
+            margin-top: 0px;
+            left: 0px;
+            max-height: none;
+        }
+
+        #map_container {
+            position: relative;
+            top: 0px;
+            left: 0px;
+            display: none;
+            z-index: 9;
+        }
+
+        #map_icon {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            cursor: move;
+            opacity: 0.5;
+        }
+
+        #black-color,
+        #red-color,
+        #green-color {
+            z-index: 1005;
+            position: absolute;
+            right: 5px;
+            color: white;
+        }
+
+        #black-color {
+            top: 10px;
+            background-color: black;
+        }
+
+        #red-color {
+            top: 35px;
+            background-color: red;
+        }
+
+        #green-color {
+            top: 60px;
+            background-color: green;
+        }
+
+        .map-overlay.top {
+            position: absolute;
+            z-index: 54650;
+        }
+
+        .coordinates {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 18px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        #map {
+
+            top: 0;
+            bottom: 0;
+            position: relative;
+
+        }
+
+        button.mapboxgl-ctrl-icon.mapboxgl-export-control,
+        button.mapboxgl-ctrl-attrib-button,
+        .mapboxgl-ctrl-bottom-left {
+            display: none !important;
+        }
+
+        .mapboxgl-ctrl-geocoder--input {
+            border-radius: var(--bs-border-radius);
+        }
+
+        .mapboxgl-ctrl-geocoder--input:focus {
+            color: var(--bs-body-color);
+            background-color: var(--bs-body-bg);
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+        }
+
+
+        .bottom-sheet-wrapper .backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 32%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            transition: all 0.2s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+
+        }
+
+        .bottom-sheet-wrapper .bottom-sheet {
+            background: #fff;
+            width: 30%;
+            position: absolute;
+            z-index: 6;
+            border-radius: 15px;
+            transition: all 0.2s ease-in-out;
+            left: 16%;
+            transform: translateX(-50%);
+            bottom: -138%;
+            display: none;
+            top: 10px;
+            padding: 30px;
+
+        }
+        .bottom-sheet-wrapper.show-modal .backdrop {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .bottom-sheet-wrapper.show-modal .bottom-sheet {
+            bottom: 10px;
+            display: none;
+        }
+
+        .close {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            float: right;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .close span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            border-radius: 2px;
+            background: red;
+            transform: rotate(45deg);
+        }
+
+        .close span::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            border-radius: 2px;
+            background: red;
+            transform: rotate(90deg);
+        }
+
+        #map_img_cont {
+            width: 100%
+        }
+
+        #map_img_cont img {
+            width: 100%;
+        }
+
+        .mapboxgl-ctrl-top-right {
+            display: none;
+        }
+
+        @media screen and (max-width: 576px) {
+            .bottom-sheet-wrapper .bottom-sheet {
+                width: 84%;
+                left: 49%;
+            }
+
+            .bottom-sheet-wrapper .backdrop {
+                width: 100%;
+            }
+
+        }
+        .card button {
+            border: none;
+            outline: 0;
+            padding: 12px;
+            color: white;
+            background-color: #000;
+            text-align: center;
+            cursor: pointer;
+            width: 40%;
+            font-size: 18px;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map_container">
+        <canvas id="new_map" style="position: absolute;"></canvas>
+    </div>
+    <section class="editor_section">
+        <div class="main_container">
+            <div class="navbar_cont">
+                <div>
+                    <div class="d-flex align-items-lg-start flex-column flex-grow-1 flex-lg-row">
+                        <div class="nav nav1 flex-lg-column nav-pills me-lg-3 justify-content-around justify-content-lg-start"
+                            id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <button class="nav-link active" id="v-pills-location-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-location" type="button" role="tab"
+                                aria-controls="v-pills-location" aria-selected="true"><span
+                                    class="material-symbols-outlined">
+                                    location_on
+                                </span>
+                                Map
+                            </button>
+                            <button class="nav-link" id="v-pills-label-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-label" type="button" role="tab" aria-controls="v-pills-label"
+                                aria-selected="false"><span class="material-symbols-outlined">
+                                    label
+                                </span>Labels</button>
+                            <button class="nav-link" id="v-pills-format-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-format" type="button" role="tab" aria-controls="v-pills-format"
+                                aria-selected="false"><span class="material-symbols-outlined">
+                                    magic_button
+                                </span>Style</button>
+                            <!-- <button class="nav-link" id="v-pills-size-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-size" type="button" role="tab" aria-controls="v-pills-size"
+                                aria-selected="false"><span class="material-symbols-outlined">
+                                    aspect_ratio
+                                </span>Size</button> -->
+                            <button class="nav-link" id="v-pills-icon-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-icon" type="button" role="tab" aria-controls="v-pills-icon"
+                                aria-selected="false"><span class="material-symbols-outlined">
+                                    award_star
+                                </span>Icons</button>
+                            <button class="nav-link" id="v-pills-advanced-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-advanced" type="button" role="tab"
+                                aria-controls="v-pills-advanced" aria-selected="false"><span
+                                    class="material-symbols-outlined">
+                                    apps
+                                </span>Advanced</button>
+                        </div>
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade show active" id="v-pills-location" role="tabpanel"
+                                aria-labelledby="v-pills-location-tab" tabindex="0">
+                                <div class="map_tab_cont">
+                                    <div class="map_cont_heading">
+                                        <h2>Location</h2>
+                                    </div>
+                                    <div class="map_description_cont1">
+                                        <p>You can search, drag/drop and zoom on the map to get the exact position you
+                                            want on your poster.</p>
+                                    </div>
+                                    <form>
+                                        <div class="map_input_cont">
+                                            <label for="exampleFormControlInput1" class="form-label">SEARCH FOR A
+                                                PLACE</label>                        
+                                            <div id="geocoder" class="geocoder"></div>
+                                            <div class="current_location_cont">
+                                                <span>Or</span><a href="#"> Use your current position</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="map_description_cont2">
+                                        <label for="exampleFormControlInput1" class="form-label">OTHER PAPULAR
+                                            PLACES</label>
+                                        <p>These are some of the most popular places among customers and staff, and
+                                            worth checking out if you want some inspiration.</p>
+                                        <ul>
+                                            <li><a href="#" onclick="map.setCenter({lng:2.352222,lat:48.856613}),DrawText('PARIS','FRANCE',`48.8566° N, 2.3522° E`)
+                                                "> Paris,
+                                                    France</a></li>
+                                            <li><a href="#" onclick="map.setCenter({lng:18.068581, lat:59.329323}),DrawText('STOCKHOLM','SWEDEN',`59.3293° N, 18.0686° E`)
+                                            ">
+                                                    Stockholm, Sweden</a></li>
+                                            <li><a href="#" onclick="map.setCenter({lng:13.404954,lat:52.520008}),DrawText('BERLIN','GERMANY',`52.5200° N, 13.4050° E`)
+                                            ">Berlin,
+                                                    Germany</a></li>
+                                            <li><a href="#" onclick="map.setCenter({lng:139.691706,lat:35.689488}),  DrawText('TOKYO','JAPAN',`35.6762° N, 139.6503° E`)
+                                            "> Tokyo,
+                                                    Japan</a></li>
+                                            <li><a href="#" onclick="map.setCenter({lng:-0.127758,lat:51.507351}),  DrawText('LONDON','UK',`51.5072° N, 0.1276° W`)
+                                           "> London,
+                                                    UK</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-label" role="tabpanel"
+                                aria-labelledby="v-pills-label-tab" tabindex="0">
+                                <div class="label_tab_cont map_tab_cont">
+                                    <div class="label_tab_heading map_cont_heading">
+                                        <h2>Labels</h2>
+                                    </div>
+                                    <div class="label_description_cont1 map_description_cont1">
+                                        <p>You can customize your design using both text and colors. Use the suggested
+                                            labels, or change them to something else!
+                                        </p>
+                                    </div>
+                                    <div class="map_input_cont label_input_cont">
+                                        <form method="post" id="addtocart" accept-charset="UTF-8" class="addtocart"
+                                        enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1"
+                                                    class="form-label">HEADLINE</label>
+                                                <input type="text" name="city" class="form-control w-100"
+                                                    id="headline_input" placeholder="City"
+                                                    autocomplete="address-level2">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">DIVIDER</label>
+                                                <input type="text" name="country" class="form-control w-100"
+                                                    id="divider_input" placeholder="Country" autocomplete="country">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">TAGLINE</label>
+                                                <input type="text" class="form-control w-100" id="tagline_input"
+                                                    placeholder="52.520°N / 13.405°E" name="tagline">
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value=""
+                                                    id="flexCheckDefault">
+                                                <label class="form-check-label" for="flexCheckDefault">
+                                                    Lock this field to current coordinates
+                                                </label>
+                                            </div>
+                                        </form>
+                                        <div style="font-size: 11px; padding-top: 15px;">
+                                            Updating coordinates when map position changes. You can set your own text as
+                                            tagline if you disable this.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-format" role="tabpanel"
+                                aria-labelledby="v-pills-format-tab" tabindex="0">
+                                <div class="map_tab_cont">
+                                    <div class="style_tab_heading map_cont_heading">
+                                        <h2>Style</h2>
+                                    </div>
+                                    <div class="style_description_cont map_description_cont1">
+                                        <p>We are all for freedom of choice, if you want to try different combinations
+                                            than our favorites - go ahead and click customize and roll your own.</p>
+                                    </div>
+                                    <div class="style_tab_img_cont">
+                                        <label>MOST PAPULAR DESIGN</label>
+                                        <div class="style_tab_img_wrapper">
+                                            <div class="map-overlay-box top">
+                                                <div class="map-overlay-box-inner">
+                                                    <fieldset>
+                                                        <label>Select layer</label>
+                                                        <select id="layer" name="layer">
+                                                            <!-- Each value matches a layer ID. -->
+                                                            <option value="water">Water</option>
+                                                            <option value="building">Buildings</option>
+                                                            <option value="land">land</option>
+                                                            <option value="road-primary" selected>Road</option>
+                                                        </select>
+                                                    </fieldset>
+                                                    <fieldset>
+                                                        <label>Choose a color</label>
+                                                        <div id="swatches"></div>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="advanced_tab_btn_cont py-2">
+                                            <div>
+                                                <label>Map Label</label>
+                                            </div>
+                                            <button type="button" class="btn my-1">Hide</button>
+                                            <button type="button" class="btn my-1 black_color">Show</button>
+                                        </div>
+                                        <div class="advanced_tab_btn_cont1 py-2">
+                                            <div>
+                                                <label>Map with</label>
+                                            </div>
+                                            <button type="button" class="btn my-1">Road</button>
+                                            <button type="button" class="btn my-1 black_color"
+                                                aria-current="Road & Building">Road & Building</button>
+                                            <button type="button" class="btn my-1">Building</button>
+                                        </div>
+                                        <div>
+                                            <a class="advance_tab_link" style="color: #000000; cursor: pointer;"> More
+                                                style..</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="tab-pane fade" id="v-pills-size" role="tabpanel"
+                                aria-labelledby="v-pills-size-tab" tabindex="0">
+                                <div class="size_tab_cont map_tab_cont">
+                                    <div class="size_tab_heading_cont map_cont_heading">
+                                        <h2>Size</h2>
+                                    </div>
+                                    <div class="size_tab_description_cont map_description_cont1">
+                                        <p>Find the perfect fit for you. We offer a selection of sizes and frame that
+                                            works on any wall.</p>
+                                    </div>
+                                    <div class="size_tab_select_cont">
+                                        <label>SELECT SIZE</label>
+                                        <select class="form-select" aria-label="Default select example">
+                                            <optgroup label="European standards (CM)">
+                                                <option selected>30x40cm</option>
+                                                <option value="1">50x70cm</option>
+                                                <option value="2">70x100cm</option>
+                                                <hr>
+                                            </optgroup>
+                                            <optgroup label="American standards (inch)">
+                                                <option value="1">12x18"</option>
+                                                <option value="2">18x24"</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <div class="size_tab_orientation_btn">
+                                        <label>SELECT ORIENTATION</label>
+                                        <div>
+                                            <button class="btn btn-outline-dark py-2">Portrait</button>
+                                            <button class="btn btn-outline-dark py-2">Landscape</button>
+                                        </div>
+                                    </div>
+                                    <div class="size_tab_frame_cont">
+                                        <label>SELECT FRAME</label>
+                                        <ul class="nav nav-underline mb-3 justify-content-around" id="pills-tab"
+                                            role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="pills-home-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-home" type="button"
+                                                    role="tab" aria-controls="pills-home"
+                                                    aria-selected="true">All</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#pills-profile" type="button" role="tab"
+                                                    aria-controls="pills-profile" aria-selected="false">Frames</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#pills-contact" type="button" role="tab"
+                                                    aria-controls="pills-contact" aria-selected="false">Hangers</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="pills-tabContent">
+                                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                                aria-labelledby="pills-home-tab" tabindex="0">
+                                                <div class="size_tab_frame_cont frame_cont">
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/none-img.jpg" alt="style_none_img1">
+                                                        <div class="frame_price">
+                                                            <span>None</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger1.webp" alt="style_hanger_img1">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger2.webp" alt="style_hanger_img2">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger3.webp" alt="style_hanger_img3">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame1.webp" alt="style_frame_img1">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame2.webp" alt="style_frame_img2">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame3.webp" alt="style_frame_img3">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame4.webp" alt="style_frame_img4">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                                aria-labelledby="pills-profile-tab" tabindex="0">
+                                                <div class="frame_cont">
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/none-img.jpg" alt="style_none_img1">
+                                                        <div class="frame_price">
+                                                            <span>None</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame1.webp" alt="style_frame_img1">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame2.webp" alt="style_frame_img2">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/frame3.webp" alt="style_frame_img3">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                                                aria-labelledby="pills-contact-tab" tabindex="0">
+                                                <div class="frame_cont">
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/none-img.jpg" alt="style_none_img1">
+                                                        <div class="frame_price">
+                                                            <span>None</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger1.webp" alt="style_hanger_img1">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger2.webp" alt="style_hanger_img2">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="frame_type_img_cont">
+                                                        <img src="images/hanger3.webp" alt="style_hanger_img3">
+                                                        <div class="frame_price">
+                                                            <span>+29.99€</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="tab-pane fade" id="v-pills-icon" role="tabpanel"
+                                aria-labelledby="v-pills-icon-tab" tabindex="0">
+                                <div class="icon_tab_cont map_tab_cont">
+                                    <div class="icon_tab_heading map_cont_heading">
+                                        <h2>Icons</h2>
+                                    </div>
+                                    <div class="icon_tab_description_cont map_description_cont1">
+                                        <p>Add an additional layer of customisation by adding icons to your design.</p>
+                                    </div>
+
+                                    <div class="icon_cont frame_cont">
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-house-chimney"></i>
+
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-star"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-location-crosshairs"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-circle"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-champagne-glasses"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-location-arrow"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-map-location"></i>
+                                        </div>
+                                        <div class="frame_type_img_cont">
+                                            <i class="fa-solid fa-thumbtack"></i>
+                                        </div>
+                                    </div>
+                                    <div class="icon_cont">
+                                        <label style="font-size: 12px;" class="fw-bold text-black-50">ICON SIZE</label>
+                                        <div>
+                                            <input type="range" min="0" max="44" step="2" value="22" class="slider"
+                                                id="icon_size_range" disabled>
+                                        </div>
+                                        <label style="font-size: 12px;" class="fw-bold text-black-50">ICON COLOR
+                                            PICKER</label>
+                                        <div>
+                                            <input type="color" class="input_color" id="icon_color_picker" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-advanced" role="tabpanel"
+                                aria-labelledby="v-pills-advanced-tab" tabindex="0">
+                                <div class="map_tab_cont">
+                                    <div class="map_cont_heading">
+                                        <h2>Advanced</h2>
+                                    </div>
+                                    <div class="map_description_cont1">
+                                        <p>This is for the perfectionists, the brave daredevils that truly wants to push
+                                            the boundaries of personalization.</p>
+                                    </div>
+                                    <div class="accordion_cont">
+                                        <div class="accordion" id="accordionPanelsStayOpenExample">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button fw-bold text-black-50" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#panelsStayOpen-collapseOne"
+                                                        aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                                        ROTATE MAP
+                                                    </button>
+                                                </h2>
+                                                <div id="panelsStayOpen-collapseOne"
+                                                    class="accordion-collapse collapse show">
+                                                    <div class="accordion-body">
+                                                        <input type="range" class="form-range" id="customRange1" min="0"
+                                                            max="360" step="1" value="0" style="width: 75%;"><span
+                                                            class="map_rotate_reset">Reset</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="accordion-item accordion-item-new">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed fw-bold text-black-50"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#panelsStayOpen-collapseTwo"
+                                                        aria-expanded="false"
+                                                        aria-controls="panelsStayOpen-collapseTwo">
+                                                        CHANGE MAP STYLE AND THEME
+                                                    </button>
+                                                </h2>
+                                                <div id="panelsStayOpen-collapseTwo"
+                                                    class="accordion-collapse collapse">
+                                                    <div class="accordion-body">
+                                                        <!-- <div>
+                                                            <label style="font-size: 12px;"
+                                                                class="fw-bold text-black-50">SELECT MAP THEME</label>
+                                                        </div> -->
+                                                        <!-- <div class="advanced_tab_btn_cont py-2">
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Modern</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Legend</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Abstract</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Pantone</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Smooth</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Nara</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Gaia</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Playroom</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Valentine</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary my-1">Humble</button>
+                                                        </div> -->
+                                                        <div class="advanced_tab_mapstyle_cont">
+                                                            <div>
+                                                                <label style="font-size: 12px;"
+                                                                    class="fw-bold text-black-50">SELECT MAP
+                                                                    LAYOUT</label>
+                                                            </div>
+                                                            <div class="advanced_tab_map_style_cont frame_cont">
+                                                                <div
+                                                                    class="frame_type_img_cont map_layout_cont select_border">
+                                                                    <img src="images/polar.svg" alt="style_none_img1"
+                                                                        id="satellite-v9" aria-current="polar" aria-colindex="1">
+                                                                    <div style="font-size:10px;">Polor</div>
+                                                                </div>
+                                                                <div class="frame_type_img_cont map_layout_cont">
+                                                                    <img src="images/boxed.svg" alt="style_none_img1"
+                                                                        id="light-v10" aria-current="classic" aria-colindex="2">
+                                                                    <div style="font-size:10px;">Classic</div>
+                                                                </div>
+                                                                <div class="frame_type_img_cont map_layout_cont">
+                                                                    <img src="images/halo.svg" alt="style_none_img1"
+                                                                        id="dark-v10" aria-current="halo" aria-colindex="3">
+                                                                    <div style="font-size:10px;">Halo</div>
+                                                                </div>
+                                                                <div class="frame_type_img_cont map_layout_cont">
+                                                                    <img src="images/square.svg" alt="style_none_img1"
+                                                                        id="streets-v11" aria-current="square" aria-colindex="4">
+                                                                    <div style="font-size:10px;">square</div>
+                                                                </div>
+                                                                <div class="frame_type_img_cont map_layout_cont">
+                                                                    <img src="images/card.svg" alt="style_none_img1"
+                                                                        id="outdoors-v11" aria-current="card" aria-colindex="5">
+                                                                    <div style="font-size:10px;">Card</div>
+                                                                </div>
+                                                                <div class="frame_type_img_cont map_layout_cont">
+                                                                    <img src="images/label.svg" alt="style_none_img1"
+                                                                        id="navigation-day-v1" aria-current="architect" aria-colindex="6">
+                                                                    <div style="font-size:10px;">architect</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="advanced_tab_mapcolor_cont">
+                                                            <div>
+                                                                <label style="font-size: 12px;"
+                                                                    class="fw-bold text-black-50">SELECT MAP
+                                                                    COLOR</label>
+                                                            </div>
+                                                            <div class="advanced_tab_map_color_cont frame_cont">
+                                                                <div class="frame_type_img_cont select_border">
+                                                                    <img src="images/black_white_color.png"
+                                                                        alt="style_none_img1" id="color_sky">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/blue_color.png"
+                                                                        alt="style_none_img1" id="color_golden">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/dark_blue.png"
+                                                                        alt="style_none_img1" id="color_bubblegum">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/black_medium.png"
+                                                                        alt="style_none_img1" id="color_midnight">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/blue_medium.png"
+                                                                        alt="style_none_img1" id="color_dark">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/red_road.png" alt="style_none_img1"
+                                                                        id="red_road">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/blue_road.png"
+                                                                        alt="style_none_img1" id="blue_road">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/red_light.png"
+                                                                        alt="style_none_img1" id="red_light">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/light_purple.png"
+                                                                        alt="style_none_img1" id="light_purple">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/red_medium.png"
+                                                                        alt="style_none_img1" id="red_medium">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/dark_red.png" alt="style_none_img1"
+                                                                        id="dark_red">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/blue_light.png"
+                                                                        alt="style_none_img1" id="blue_light">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/yellow_color.png"
+                                                                        alt="style_none_img1" id="yellow_color">
+                                                                </div>
+                                                                <div class="frame_type_img_cont">
+                                                                    <img src="images/green_color.png"
+                                                                        alt="style_none_img1" id="green_color">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="card" style="margin: 0;"><button id="cart_btn">Add to Cart</button></p>
+
+            </div>
+            
+            <div class="content_cont">
+                <div class="content_wrapper">
+                    <button class="map_print_btn bg-light btn d-none">Print</button>
+                    <!-- <div class="map_poster_cont">
+                        <img src="images/s1_main_img1.png" width="100%" alt="map_img">
+                    </div> -->
+                    <!-- <div class="frame">
+                    <div class="border">
+                        <div class="image"> -->
+                    <!-- <img src="http://images5.fanpop.com/image/photos/30000000/Marilyn-Monroe-marilyn-monroe-30014001-960-1280.jpg" height="350" width="250" alt="" /> -->
+                    <!-- <div id="map"></div> -->
+
+                    <!-- <h1>Overlay text on canvas image and save as base64</h1> -->
+                    <div class="page-wrap d-none">
+                        <div class="controls">
+                            <input class="controls__input" type="file" id="imageLoader" name="imageLoader" />
+                            <label class="controls__label" for="name">First, choose an image.</label>
+
+                            <input class="controls__input" id="name" type="text" value="" />
+                            <label class="controls__label" for="name">Overlay Text</label>
+                        </div>
+                        <div id="canvas-wrap">
+                        </div>
+                    </div>
+                    <!-- <canvas id="canvasID" width="400" height="400">Canvas not supported</canvas> -->
+                    <div id='map' style="width: 483px;height:742px;margin:10px auto;overflow: inherit;">
+                        <div class="map_over_text map_over_text_bg_color text_color_dark" id="map_text">
+                            <h2 class="px-1">MIAMI</h2>
+                            <p class="px-1">UNITED STATES</p>
+                            <p class="px-1">80° 11' 37″ S 25° 46' 27″ E</p>
+                        </div>
+                        <div id="imageCanvas" class="shadow" width=1056px height=1493px style="color: #fff;">
+                            <!-- <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region"
+                                width="768" height="576" style="width: 768px; height: 576px;">
+                                <canvas class="canvas_icon"></canvas>
+                            </canvas> -->
+                            <!-- <canvas id="canvasID"></canvas> -->
+                            <img src="https://www.nespresso.com/aaaprogram/build/images/loader.126ca6bc.gif"
+                                width="100%" style="padding-top:18%" alt="" class="content_cont_loader">
+                        </div>
+                    </div>
+                    <div id="menu">
+
+                    </div>
+
+                    <a id="lnkDownload" href="#" class="display_none">Save image</a>
+
+                </div>
+            </div>
+        </div>
+        <canvas width="3168" height="4479" id="canvas-total" style="display: none;"></canvas>
+        <pre id="coordinates" class="coordinates"></pre>
+
+        <input type="hidden" id="curLat">
+        <input type="hidden" id="curLng">
+        <input type="hidden" id="state">
+        <a id="download" download="triangle.png" class="d-none">
+            <button type="button" onClick="download()">Download</button>
+        </a>
+        <!-- </div>end image -->
+        <!-- <div class="text">Stars in Hands</div>
+                    </div>end border-->
+        <!-- </div>end frame -->
+        </div>
+        </div>
+        <!-- print_map_popup  -->
+        <!--  mobile mock  -->
+        <div class="mockup">
+            <!--   mobile botttom nav, it can be any element you want, like a button etc.   -->
+            <!--  main bottom sheet / modal    -->
+            <div class="bottom-sheet-wrapper">
+                <div class="backdrop"></div>
+                <div class="bottom-sheet">
+                    <div class="close center">
+                        <span></span>
+                    </div>
+                    <div class="container">
+                        <div class="page-header">
+                            <h2>Print Maps</h2>
+                            <p class="lead">High-resolution maps in the browser, for printing.</p>
+
+                        </div>
+
+                        <noscript>
+                            <div class="alert alert-danger" role="alert">
+                                This site requires JavaScript to function, but it seems to be disabled in your browser.
+                            </div>
+                        </noscript>
+
+                        <form onsubmit="generateMap(); return false;" id="config">
+                            <fieldset id="config-fields">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group pt-2">
+                                            <label>Unit</label><br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="unitOptions" value="in" id="inUnit" checked>
+                                                Inch
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="unitOptions" value="mm" id="mmUnit">
+                                                Millimeter
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group pt-2">
+                                            <label>Output format</label><br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="outputOptions" value="png" checked> PNG
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="outputOptions" value="pdf"> PDF
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="form-group pt-2">
+                                            <label for="styleSelect">Map style</label>
+                                            <select id="styleSelect" class="form-control">
+                                                <option value="mapbox://styles/mapbox/bright-v9">Mapbox Bright</option>
+                                                <option value="mapbox://styles/mapbox/outdoors-v10">Mapbox Outdoors
+                                                </option>
+                                                <option value="mapbox://styles/mapbox/emerald-v8">Mapbox Emerald
+                                                </option>
+                                                <option value="mapbox://styles/mapbox/light-v9">Mapbox Light</option>
+                                                <option value="mapbox://styles/mapbox/streets-v10">Mapbox Streets
+                                                </option>
+                                                <option value="https://tiles.stadiamaps.com/styles/alidade_smooth.json">
+                                                    Stadia Maps Alidade Smooth</option>
+                                                <option
+                                                    value="https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json">
+                                                    Stadia Maps Alidade Smooth Dark</option>
+                                                <option value="https://tiles.stadiamaps.com/styles/outdoors.json">Stadia
+                                                    Maps Outdoors</option>
+                                                <option value="https://tiles.stadiamaps.com/styles/osm_bright.json">
+                                                    Stadia Maps OSM Bright</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div>
+
+
+                                        <div>
+                                            <div class="form-group pt-2" id="widthGroup">
+                                                <label for="widthInput">Width</label>
+                                                <input type="text" class="form-control" id="widthInput"
+                                                    autocomplete="off" value="8">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="form-group pt-2" id="heightGroup">
+                                                <label for="heightInput">Height</label>
+                                                <input type="text" class="form-control" id="heightInput"
+                                                    autocomplete="off" value="6">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="form-group pt-2" id="dpiGroup">
+                                            <label for="dpiInput">DPI</label>
+                                            <input type="text" class="form-control" id="dpiInput" autocomplete="off"
+                                                value="300">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row">
+                                            <div>
+                                                <div class="form-group pt-2" id="latGroup">
+                                                    <label for="latInput">Latitude</label>
+                                                    <input type="text" class="form-control" id="latInput"
+                                                        autocomplete="off" value="">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="form-group pt-2" id="lonGroup">
+                                                    <label for="lonInput">Longitude</label>
+                                                    <input type="text" class="form-control" id="lonInput"
+                                                        autocomplete="off" value="">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="form-group pt-2" id="zoomGroup">
+                                                    <label for="zoomInput">Zoom</label>
+                                                    <input type="text" class="form-control" id="zoomInput"
+                                                        autocomplete="off" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                        <div class="alert alert-danger" role="alert" id="error-message"></div>
+                        <div class="d-none">
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Map</h3>
+                                    </div>
+                                    <div class="panel-body map-container">
+                                        <div id="map" class="display_none">
+                                            <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region"
+                                                width="768" height="576" style="width: 768px; height: 576px;"></canvas>
+                                            © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a
+                                                href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>
+                                            <strong><a href='https://www.mapbox.com/map-feedback/'
+                                                    target='_blank'>Improve this map</a></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d-none">
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Required Attribution</h3>
+                                    </div>
+                                    <div class="panel-body" id="mapbox-attribution" style="display: none;">
+                                        <p><strong>Attribution of maps is required.</strong> Per the <a
+                                                href="https://www.mapbox.com/help/how-attribution-works/#static--print">Mapbox
+                                                attribution requirements:</a></p>
+                                        <p>Static and print maps need to be attributed in the same fashion as you would
+                                            cite a photograph: in a textual description near the image.</p>
+                                        <p>If you can include HTML, use this code snippet that includes links to Mapbox
+                                            & OpenStreetMap:</p>
+                                        <pre>© &lt;a href='https://www.mapbox.com/about/maps/'&gt;Mapbox&lt;/a&gt; © &lt;a href='https://www.openstreetmap.org/copyright'&gt;OpenStreetMap&lt;/a&gt; &lt;strong&gt;&lt;a href='https://www.mapbox.com/map-feedback/' target='_blank'&gt;Improve this map&lt;/a&gt;&lt;/strong&gt;</pre>
+                                        <p>For print output or if you can’t include links, use this text-only
+                                            attribution:</p>
+                                        <pre>© Mapbox, © OpenStreetMap</pre>
+                                    </div>
+                                    <div class="panel-body" id="stadiamaps-attribution" style="display: none;">
+                                        <p><strong>Attribution of maps is required.</strong> See the Stadia Maps <a
+                                                href="https://stadiamaps.com/attribution/">attribution</a> and <a
+                                                href="https://stadiamaps.com/terms-of-service/">terms of service</a>
+                                            pages for details.</p>
+                                        <p><strong>Commerical use is prohibited.</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 py-3">
+                                <button type="submit" class="btn btn-dark btn-lg" id="generate-btn">Generate
+                                    Map</button>
+                                <div id="spinner"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="modal-backdrop in" id="modalBackdrop" style="display: none;"></div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="https://js.sentry-cdn.com/9c5feb5b248b49f79a585804c259febc.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/export.js' %}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"
+        integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.29.0/js/canvas-to-blob.min.js"
+        integrity="sha512-zkt2aBQ0jhSXjI6VhJegNqBN3Kqlbi7PxpxOpELGoKtRGSuPOVGvetuTixdhQSuRefsFKroRgWRwQDpRcMd3+A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"
+        integrity="sha512-Qlv6VSKh1gDKGoJbnyA5RMXYcvnpIqhO++MhIM2fStMcGT9i2T//tSwYFlcyoRRDcDZ+TYHpH8azBBCyhpSeqw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.1.0/fabric.all.min.js"></script> -->
+    <script type="text/javascript">
+
+        var text_title = "Overlay text";
+        var imageLoader = document.getElementById('imageLoader');
+        imageLoader.addEventListener('change', handleImage, false);
+        var canvas = document.getElementById('imageCanvas');
+        // var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.crossOrigin = "anonymous";
+
+        window.addEventListener('load', DrawPlaceholder)
+
+        function DrawPlaceholder() {
+            // img.onload = function() {
+            //     DrawOverlay(img);
+            //     DrawText();
+            //     DynamicText(img)
+            // };
+            // img.src = 'https://unsplash.it/3440/4386/?random';
+            // DrawOverlay();
+            // DrawText('MIAMI', 'UNITED STATES', `80° 11' 37″ S  25° 46' 27″ E`);
+            // DynamicText('MIAMI', 'UNITED STATES', `80° 11' 37″ S  25° 46' 27″ E`);
+        }
+
+        function DrawOverlay() {
+            // ctx.drawImage(img,0,0);
+            // ctx.fillStyle = bg_color;
+            // ctx.fillRect(0, 0, canvas.width, canvas.height * 2);
+            // ctx.clearRect(40, 40, canvas.width / 1.1, canvas.height / 1.35);
+
+            //ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        }
+        let title, country, latLng;
+        function DrawText(text_title, state, latlng) {
+            // ctx.fillStyle = "white";
+            // ctx.textBaseline = 'middle';
+            title = text_title;
+            country = state
+            latLng = latlng;
+            document.querySelector('#map_text h2').innerHTML = text_title
+            document.querySelectorAll('#map_text p')[0].innerHTML = country
+            document.querySelectorAll('#map_text p')[1].innerHTML = latlng
+        }
+        let DTstyle = {
+            text_Align: 'center',
+            text_Style: 'Green',
+            title_font: "bold 90px Arial",
+            country_font: "42px 'Arial'",
+            latlng_font: "30px 'Arial'",
+        }
+        function DrawText1(title, country, latLng, DTstyle) {
+            // ctx.fillStyle = "white";
+            // ctx.textBaseline = 'middle';
+            // title=text_title;
+            // country=state
+            // latLng=latlng;
+            // ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log(title);
+            ctx.textAlign = DTstyle.text_Align;
+            ctx.fillStyle = DTstyle.text_Style;
+            ctx.font = DTstyle.title_font;
+            ctx.fillText(title, 1056 / 2, 1410 / 1.1);
+
+            ctx.font = DTstyle.country_font;
+            ctx.fillText(country, 1056 / 2, 1475 / 1.1);
+
+            ctx.font = DTstyle.latlng_font;
+            ctx.fillText(latLng, 1056 / 2, 1530 / 1.1);
+        }
+        //    DrawText1(title, country, latLng, DTstyle)
+
+        function DynamicText(value, state, latlng) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            DrawOverlay();
+            DrawText(value, state, latlng);
+            //         text_title = value;
+            //         ctx.fillText(text_title, 1056/2, 1390/1.1);
+
+            //         ctx.font = "40px 'Montserrat'";
+            // ctx.fillText(state, 1056/2, 1440/1.1);
+
+            // ctx.font = "25px 'Montserrat'";
+            // ctx.fillText(latlng, 1056/2, 1480/1.1);
+        }
+        function handleImage(e) {
+            var reader = new FileReader();
+            var img = "";
+            var src = "";
+            reader.onload = function (event) {
+                img = new Image();
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                }
+                img.src = event.target.result;
+                src = event.target.result;
+                canvas.classList.add("show");
+                DrawOverlay(img);
+                DrawText();
+                DynamicText(img);
+            }
+
+            reader.readAsDataURL(e.target.files[0]);
+
+        }
+        // function convertToImage() {
+        //     window.open(canvas.toDataURL('png'));
+        // }
+        // document.getElementById('download').onclick = function download() {
+        //     convertToImage();
+        // }
+
+        mapboxgl.accessToken = 'pk.eyJ1Ijoia2FyYW5nMHlhbCIsImEiOiJja2VlaG42eDUwZnppMnlveXJtcjdvOGtvIn0.KoPWjGAkfBFhFBEuSUinlw';
+        let style_ID = 'clia1ewf100wd01pn6l9vgqwd'
+        // var map = new mapboxgl.Map({
+        //     container: 'map', // container id
+        //     style: 'mapbox://styles/karang0yal/clia1ewf100wd01pn6l9vgqwd', //hosted style id
+        //     zoom: 14,
+        //     center: [-80.19125409514797, 25.78075907018487],
+        //     preserveDrawingBuffer: true
+        // });
+        setInterval(()=>{
+
+            if (window.innerWidth <= 1200 && window.innerWidth > 576) {
+                map.getContainer().style.width = 378 + 'px';
+                map.getContainer().style.height = 583 + 'px';
+        } else if (window.innerWidth <= 576) {
+            map.getContainer().style.width = 309 + 'px';
+            map.getContainer().style.height = 476 + 'px';
+        }else if (window.innerWidth > 1200) {
+            map.getContainer().style.width = 483 + 'px';
+            map.getContainer().style.height = 742 + 'px';
+            map.getCanvas().style.height= 550+ 'px';
+        }
+    }, 10)
+        map.addControl(new watergis.MapboxExportControl({
+            PageSize: watergis.Size.A3,
+            PageOrientation: watergis.PageOrientation.Portrait,
+            Format: watergis.Format.PNG,
+            DPI: watergis.DPI[300],
+            Crosshair: true,
+            PrintableArea: true,
+        }), 'top-right');
+        var i = 0;
+
+        // Add the control to the map.
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            marker: false,
+            zoom: 14
+        });
+
+        const marker = new mapboxgl.Marker({
+            draggable: true
+        })
+
+        function onDragEnd() {
+            const lngLat = marker.getLngLat();
+            coordinates.style.display = 'block';
+            coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
+        }
+
+        function toDegreesMinutesAndSeconds(e) {
+            var t = Math.abs(e)
+                , a = Math.floor(t)
+                , r = 60 * (t - a)
+                , o = Math.floor(r)
+                , i = Math.floor(60 * (r - o));
+            return a + String.fromCharCode(176) + " " + o + "' " + i + "\""
+        }
+        function convertDMS(e, t) {
+            var a = toDegreesMinutesAndSeconds(e)
+                , r = 0 <= e ? "N" : "S"
+                , o = toDegreesMinutesAndSeconds(t)
+                , i = 0 <= t ? "E" : "W";
+            geoPoint = a + " " + r + "   " + o + " " + i,
+                propertyGeoPoint = a + " " + r + ";" + o + " " + i,
+                document.getElementById("curLat").value = e,
+                document.getElementById("curLng").value = t
+            return geoPoint;
+        }
+        marker.on('dragend', onDragEnd);
+        geocoder.on('result', e => {
+            console.log(e);
+            console.log(e.result.place_name.split(', ').splice(-1, 1)[0])
+            // DynamicText(e.result.text.toUpperCase(), e.result.place_name.split(', ').splice(-1, 1)[0].toUpperCase(), convertDMS(e.result.center[0], e.result.center[1]))
+            document.querySelector('#map_text h2').innerHTML = e.result.text.toUpperCase()
+            document.querySelectorAll('#map_text p')[0].innerHTML = e.result.place_name.split(', ').splice(-1, 1)[0].toUpperCase()
+            document.querySelectorAll('#map_text p')[1].innerHTML = convertDMS(e.result.center[0], e.result.center[1])
+            convertDMS(e.result.center[0], e.result.center[1])
+            map.setCenter(e.result.center)
+            marker.setLngLat(e.result.center).addTo(map);
+            map.setZoom(14)
+            selected_layout == 'square' ? squareText() : null
+        });
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+      
+        function main() {
+            imagesLoaded += 1;
+            var canvas = document.getElementById("canvas-total");
+            var ctx = canvas.getContext("2d");
+            if (imagesLoaded == 2) {
+                // composite now
+                ctx.drawImage(img1, 0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1;
+                ctx.drawImage(img2, 40 * 3, 40 * 3, canvas.width / 1.085, canvas.height / 1.35);
+                setDPI(document.getElementById('canvas-total'), 150)
+            }
+        }
+        function loadImage(src, onload) {
+            // http://www.thefutureoftheweb.com/blog/image-onload-isnt-being-called
+            var img = new Image();
+            img.onload = onload;
+            img.src = src;
+            return img;
+        }
+        // let bg_color = '#ffffff';
+        // document.querySelector('#imageCanvas').style.backgroundColor = bg_color;
+        // // goto_advanced_tab_map_style
+        document.querySelector('.advance_tab_link').addEventListener('click', function () {
+            if (document.querySelector('.accordion-item-new button').ariaExpanded == 'false') {
+                const triggerEl = document.querySelector('#v-pills-tab button[data-bs-target="#v-pills-advanced"]')
+                triggerEl.click()
+                const triggerEl1 = document.querySelector('#accordionPanelsStayOpenExample button[data-bs-target="#panelsStayOpen-collapseTwo"]')
+                triggerEl1.click()
+            } else {
+                const triggerEl = document.querySelector('#v-pills-tab button[data-bs-target="#v-pills-advanced"]')
+                triggerEl.click()
+            }
+        })
+        let mapstyle;
+        let selected_layout = 'polar';
+        let selected_layout_index = '1';
+
+        // select_advanced_tab_map_style
+        function select_img(e) {
+
+            let maptext = document.querySelector('#map_text')
+            e.target.id == 'color_dark' ? canvas.classList.add('bg_color')
+                : [
+                    canvas.classList.remove('bg_color')
+                ]
+            if (e.target.parentNode.parentNode.className == 'advanced_tab_map_color_cont frame_cont') {
+                console.log(selected_layout)
+                if (selected_layout == 'classic') {
+                    maptext.classList.remove('text_color_light', 'bg_color')
+                    maptext.classList.add('text_color_dark')
+                }
+                mapstyle = e.target.id;
+                if (selected_layout == 'square' && e.target.id == 'color_sky') {
+                    maptext.classList.add('text_color_dark')
+                    maptext.classList.remove('text_color_light')
+                } else {
+                    maptext.classList.add('text_color_light')
+                    maptext.classList.remove('text_color_dark')
+                    maptext.removeAttribute('style')
+                }
+                if (selected_layout == 'card' && mapstyle != 'color_dark') {
+                    maptext.classList.remove('bg_color', 'text_color_light')
+                    maptext.classList.add('text_color_dark')
+
+                }
+                if (selected_layout == 'classic' || selected_layout == 'architect' || selected_layout == 'polar') {
+                    maptext.classList.remove('text_color_light', 'bg_color')
+                    maptext.classList.add('text_color_dark')
+                }
+                if (e.target.id == 'color_sky') {
+                    style_ID = 'clia1ewf100wd01pn6l9vgqwd'
+                    map.setStyle("mapbox://styles/karang0yal/clia1ewf100wd01pn6l9vgqwd")
+                }
+                else if (e.target.id == 'color_golden') {
+                    style_ID = 'clia2jwfo00jd01qy7e9p0bq6'
+                    map.setStyle("mapbox://styles/karang0yal/clia2jwfo00jd01qy7e9p0bq6")
+                }
+                else if (e.target.id == 'color_bubblegum') {
+                    style_ID = 'clia3pvgk004p01qr4m2l5a6w'
+                    map.setStyle("mapbox://styles/karang0yal/clia3pvgk004p01qr4m2l5a6w")
+                }
+                else if (e.target.id == 'color_midnight') {
+                    style_ID = 'clia3xhx502wg01pg4pw395nu'
+                    map.setStyle("mapbox://styles/karang0yal/clia3xhx502wg01pg4pw395nu")
+                }
+                else if (e.target.id == 'color_dark') {
+                    style_ID = 'clia42y6g02uh01pnawdg4zun'
+                    map.setStyle("mapbox://styles/karang0yal/clia42y6g02uh01pnawdg4zun")
+                    canvas.classList.add('bg_color')
+                    // DTstyle.text_Style = '#ffffff'
+                    // DrawText1(title, country, latLng, DTstyle)
+                    if (selected_layout == 'card' || selected_layout == 'classic' || selected_layout == 'architect') {
+                        maptext.classList.add('bg_color', 'text_color_light')
+                    } else if (selected_layout == 'polar') {
+                        maptext.classList.add('bg_color', 'text_color_light')
+                    }
+                    else {
+                        maptext.classList.remove('bg_color', 'text_color_dark')
+                    }
+                }
+                else if (e.target.id == 'red_road') {
+                    style_ID = 'clia49xxz02s601qu4m6o7s4q'
+                    map.setStyle("mapbox://styles/karang0yal/clia49xxz02s601qu4m6o7s4q")
+                }
+                else if (e.target.id == 'blue_road') {
+                    style_ID = 'clia4e5zw02s701qu2isyfypv'
+                    map.setStyle("mapbox://styles/karang0yal/clia4e5zw02s701qu2isyfypv")
+                }
+                else if (e.target.id == 'red_light') {
+                    style_ID = 'clia4jg4002ui01pnekns7n5q'
+                    map.setStyle("mapbox://styles/karang0yal/clia4jg4002ui01pnekns7n5q")
+                }
+                else if (e.target.id == 'light_purple') {
+                    style_ID = 'clia4myvx02w501qycp3fdvsg'
+                    map.setStyle("mapbox://styles/karang0yal/clia4myvx02w501qycp3fdvsg")
+                }
+                else if (e.target.id == 'red_medium') {
+                    style_ID = 'clia4q7wn02s901qubd9t60qe'
+                    map.setStyle("mapbox://styles/karang0yal/clia4q7wn02s901qubd9t60qe")
+                }
+                else if (e.target.id == 'dark_red') {
+                    style_ID = 'clia4tn6i02uj01pnbikc55zn'
+                    map.setStyle("mapbox://styles/karang0yal/clia4tn6i02uj01pnbikc55zn")
+                }
+                else if (e.target.id == 'blue_light') {
+                    style_ID = 'clia4wtth02w601qyd6vydxp6'
+                    map.setStyle("mapbox://styles/karang0yal/clia4wtth02w601qyd6vydxp6")
+                }
+                else if (e.target.id == 'yellow_color') {
+                    style_ID = 'clia50eif00up01quh2goacsi'
+                    map.setStyle("mapbox://styles/karang0yal/clia50eif00up01quh2goacsi")
+                }
+                else if (e.target.id == 'green_color') {
+                    style_ID = 'clia53aww02td01pr487p3eqd'
+                    map.setStyle("mapbox://styles/karang0yal/clia53aww02td01pr487p3eqd")
+                }
+            }
+            if (e.target.parentNode.parentNode.className == 'advanced_tab_map_style_cont frame_cont') {
+                // map.setStyle('mapbox://styles/mapbox/' + e.target.id);
+            }
+            console.log(e.target.parentNode.parentNode.className)
+            console.log(e.target.id)
+
+            let imgdiv = e.target.parentNode.parentNode.children.length
+            let imgdiv1 = e.target.parentNode.parentNode.parentNode.children.length
+
+            if (e.target.parentNode.className == "frame_type_img_cont") {
+                for (let i = 0; i < imgdiv; i++) {
+                    e.target.parentNode.parentNode.children[i].classList.remove('select_border')
+                }
+                for (let i = 0; i < imgdiv1; i++) {
+                    e.target.parentNode.parentNode.parentNode.children[i].classList.remove('select_border')
+                }
+                e.target.parentNode.classList.add('select_border')
+            } else if (e.target.parentNode.className == 'frame_price') {
+                if (e.target.parentNode.parentNode.className == "frame_type_img_cont select_border") {
+                    e.target.parentNode.parentNode.classList.remove('select_border')
+                } else {
+                    for (let i = 0; i < imgdiv1; i++) {
+                        e.target.parentNode.parentNode.parentNode.children[i].classList.remove('select_border')
+                    }
+                    e.target.parentNode.parentNode.classList.add('select_border')
+                }
+            } else {
+                // e.target.parentNode.classList.remove('select_border')
+            }
+        }
+        // document.querySelector('.style_tab_design_cont').addEventListener('click', select_img)
+        // document.querySelector('.size_tab_frame_cont').addEventListener('click', select_img)
+        document.querySelector('.advanced_tab_map_style_cont').addEventListener('click', map_layout)
+        document.querySelector('.advanced_tab_map_color_cont').addEventListener('click', select_img)
+        // rotate_map 
+        document.querySelector('#customRange1').addEventListener('input', function (e) {
+            map.setBearing(e.target.value)
+        })
+        // rotate_map_reset
+        document.querySelector('.map_rotate_reset').addEventListener('click', function () {
+            map.setBearing(0)
+            document.querySelector('#customRange1').value = '0'
+        })
+        const maptext = document.querySelector('#map_text')
+        selected_layout == 'polar' ? maptext.classList.add('map_over_width') : null
+        function map_layout(e) {
+            selected_layout_index=e.target.ariaColIndex;
+            selected_layout = e.target.ariaCurrent;
+            if (selected_layout == 'polar' || selected_layout == 'halo' || selected_layout == 'classic' || selected_layout == 'card' || selected_layout == 'square' || selected_layout == 'architect') {
+                document.querySelectorAll('.map_layout_cont').forEach((ele) => ele.classList.remove('select_border'))
+                e.target.parentNode.classList.toggle('select_border')
+            }
+            select_img(e)
+            console.log(e.target.ariaCurrent)
+            const canvas1 = canvas
+            const w = canvas1.clientWidth
+            const h = canvas1.clientHeight
+            const maptext = document.querySelector('#map_text')
+            const mapbox = map.getCanvas()
+            const mapcont = map.getContainer()
+            selected_layout == 'polar' ? maptext.classList.add('map_over_width') : maptext.classList.remove('map_over_width')
+            e.target.ariaCurrent != 'architect' ? [
+                mapbox.classList.remove('border_2'),
+                maptext.classList.remove('architect_layout_text')
+            ] : null
+            e.target.ariaCurrent != 'card' ? [
+                mapbox.classList.remove('mapboxgl-canvas-new'),
+                maptext.classList.remove('map_over_text1'),
+                window.innerWidth <= 576 ? mapcont.style.width = '309px' : window.innerWidth <= 1200 ? mapcont.style.width = '378px' : mapcont.style.width = '483px'
+            ] : null
+            if (selected_layout != 'square') {
+                document.querySelector('.map_over_text h2').style == null ? '' : [
+                    document.querySelector('.map_over_text h2').style.removeProperty('font-size'),
+                    maptext.removeAttribute('style')
+                ]
+            }
+            e.target.ariaCurrent != 'square' ? [
+                maptext.classList.remove('map_over_text2'),
+                maptext.classList.add('map_over_text_bg_color', 'map_over_text_border'),
+            ] : null
+            e.target.ariaCurrent != 'classic' || e.target.ariaCurrent != 'halo' ? [
+                maptext.classList.remove('map_over_text_classic'),
+                // maptext.classList.add('map_over_text_bg_color', 'map_over_text_border'),
+            ] : null
+            if (e.target.ariaCurrent == 'classic') {
+                mapbox.style.maxHeight = h - (h * 5.66 / 100) + 'px'
+                mapbox.style.width = w - (w * 7.77 / 100) + 'px'
+                maptext.classList.add('map_over_text_bg_color', 'map_over_text_border', 'text_color_dark', 'map_over_text_classic')
+                maptext.classList.remove('display_none', 'text_color_light')
+                if (mapstyle == 'color_dark') {
+                    maptext.classList.remove('text_color_dark')
+                    maptext.classList.add('text_color_light', 'bg_color')
+                    canvas.classList.add('bg_color')
+                } else {
+                    maptext.classList.remove('text_color_light', 'bg_color')
+                    maptext.classList.add('text_color_dark')
+                    canvas.classList.remove('bg_color')
+                }
+            } else if (e.target.ariaCurrent == 'halo') {
+                mapbox.style.maxHeight = h - (h * 5.66 / 100) + 'px'
+                mapbox.style.width = w - (w * 7.77 / 100) + 'px'
+                mapstyle == 'color_dark' ? canvas.classList.add('bg_color') : canvas.classList.remove('bg_color')
+                maptext.classList.add('map_over_text_classic')
+                maptext.classList.remove('map_over_text_bg_color', 'map_over_text_border', 'display_none', 'bg_color')
+            } else if (e.target.ariaCurrent == 'square') {
+                mapbox.style.maxHeight = h - (h * 5.66 / 100) + 'px'
+                mapbox.style.width = w - (w * 7.77 / 100) + 'px'
+                maptext.classList.remove('map_over_text_bg_color', 'map_over_text_border', 'display_none', 'bg_color')
+                maptext.classList.add('map_over_text2')
+                if (mapstyle != 'color_sky' && mapstyle != undefined) {
+                    maptext.classList.remove('text_color_dark')
+                    maptext.classList.add('text_color_light')
+                } else {
+                    maptext.classList.remove('text_color_light')
+                    maptext.classList.add('text_color_dark')
+                }
+                squareText()
+                // console.log(Math.round(text_size))
+            } else if (e.target.ariaCurrent == 'architect') {
+                mapbox.style.maxHeight = h - (h * 5.66 / 100) + 'px'
+                mapbox.style.width = w - (w * 7.77 / 100) + 'px'
+                maptext.classList.add('architect_layout_text')
+                maptext.classList.remove('display_none', 'text_color_light')
+                mapbox.classList.add('border_2')
+                mapstyle == 'color_dark' ? [
+                    maptext.classList.add('text_color_light'),
+                    canvas.classList.add('bg_color'),
+
+                ] : [
+                    maptext.classList.add('text_color_dark'),
+                    canvas.classList.remove('bg_color'),
+
+                ]
+                map.resize()
+            } else if (e.target.ariaCurrent == 'polar') {
+                mapbox.style.maxHeight = h * 74.3 / 100 + 'px'
+                mapbox.style.width = w - (w * 7.77 / 100) + 'px'
+                mapstyle == 'color_dark' ? [
+                    canvas.classList.add('bg_color'),
+                    maptext.classList.add('bg_color', 'text_color_light')
+
+                ] : maptext.classList.add('text_color_dark')
+                maptext.classList.remove('map_over_text_border')
+            }
+            else if (e.target.ariaCurrent == 'card') {
+                mapbox.classList.add('mapboxgl-canvas-new')
+                mapcont.style.width = w + 'px'
+                // mapbox.style.width = w + 'px'
+                mapbox.style.maxHeight = h + 'px'
+                maptext.classList.add('map_over_text1')
+                maptext.classList.remove('map_over_text_border', 'display_none')
+                if (mapstyle == 'color_dark') {
+                    maptext.classList.add('bg_color', 'text_color_light')
+                    maptext.classList.remove('map_over_text_bg_color')
+
+                } else {
+                    maptext.classList.remove('text_color_light', 'bg_color')
+                    maptext.classList.add('text_color_dark')
+                }
+            }
+            map.resize()
+        }
+
+        function squareText() {
+            let width = map.getContainer().getBoundingClientRect().width
+            let height = map.getContainer().getBoundingClientRect().height - 130
+            let mapdem = width * height * 48 / 100
+            console.log(mapdem)
+            console.log(width * height)
+            let over_city_text = document.querySelector('.map_over_text2 h2')
+            let text_len = over_city_text.innerHTML.length
+            let text_size = Math.sqrt(mapdem / text_len)
+            if (text_len == '3') {
+                let dec_text_size = text_size - (text_size * 14 / 100)
+                over_city_text.style.fontSize = Math.round(dec_text_size) + 'px'
+            } else {
+                over_city_text.style.fontSize = Math.round(text_size) + 'px'
+            }
+            console.log('hello')
+        }
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        function showPosition(position) {
+            console.log(position)
+            map.setCenter({ lng: position.coords.longitude, lat: position.coords.latitude })
+        }
+        document.querySelector('.current_location_cont a').addEventListener('click', getLocation)
+        map.on('load', function () {
+            map.resize();
+        });
+        const swatches = document.getElementById('swatches');
+        const layer = document.getElementById('layer');
+        const colors = [
+            '#ffffcc',
+            '#a1dab4',
+            '#41b6c4',
+            '#2c7fb8',
+            '#253494',
+            '#fed976',
+            '#feb24c',
+            '#fd8d3c',
+            '#f03b20',
+            '#bd0026',
+            '#FDEBED',
+            '#FF9F9F',
+            '#9ED5C5',
+            '#90A17D',
+            '#B2A4FF',
+            '#FFE15D',
+            "#7FBCD2",
+            "#FA7070",
+            "#CDE990",
+            '#2F86A6',
+            '#ffffff',
+            '#000000'
+
+        ];
+        let land_value = '',
+            land_color = '',
+            road_value = '',
+            road_color = '',
+            water_value = '',
+            building_value = '',
+            building_color = '',
+            water_color = '',
+            new_color = '';
+
+
+        for (const color of colors) {
+            const swatch = document.createElement('button');
+            swatch.style.backgroundColor = color;
+            swatch.addEventListener('click', () => {
+                if (layer.value == 'land') {
+                    land_value = 'active';
+                    land_color = color;
+                    map.setPaintProperty(layer.value, 'background-color', color);
+                    map.setPaintProperty('landuse', 'fill-color', color);
+                    map.setPaintProperty('land-structure-line', 'line-color', color);
+                } else if (layer.value == 'road-primary') {
+                    road_value = 'active'
+                    road_color = color;
+                    map.setPaintProperty('road-simple', 'line-color', color);
+                    map.setPaintProperty('road-rail', 'line-color', color);
+                    map.setPaintProperty('road-steps', 'line-color', color);
+                    map.setPaintProperty('road-path-trail', 'line-color', color);
+                    map.setPaintProperty('road-pedestrian', 'line-color', color);
+                    map.setPaintProperty('road-path', 'line-color', color);
+                    map.setPaintProperty('road-path-cycleway-piste', 'line-color', color);
+                    // map.setPaintProperty('road-street-low', 'line-color', color);
+                    map.setPaintProperty('bridge-path', 'line-color', color);
+                    map.setPaintProperty('bridge-simple', 'line-color', color);
+                    map.setPaintProperty('bridge-path-trail', 'line-color', color);
+                    map.setPaintProperty('tunnel-path', 'line-color', color);
+                    map.setPaintProperty('tunnel-simple', 'line-color', color);
+                    map.setPaintProperty('land-structure-polygon', 'fill-color', color);
+                    map.setPaintProperty('tunnel-simple', 'line-color', color);
+                    map.setPaintProperty('bridge-rail', 'line-color', color);
+                    map.setPaintProperty('bridge-pedestrian', 'line-color', color);
+                    map.setPaintProperty('aeroway-line', 'line-color', color);
+
+                }
+                else if (layer.value == 'building') {
+                    building_color = color;
+                    building_value = 'active';
+                    map.setPaintProperty(layer.value, 'fill-color', color);
+                    map.setPaintProperty('aeroway-polygon', 'fill-color', color);
+                } else {
+                    water_value = 'active';
+                    water_color = color;
+                    map.setPaintProperty(layer.value, 'fill-color', color);
+                }
+            });
+            swatches.appendChild(swatch);
+        }
+
+        let label_visibility = '',
+            label_fun_call = false;
+        document.querySelectorAll(".advanced_tab_btn_cont button").forEach((ele) => {
+
+            ele.addEventListener("click", function (e) {
+                label_fun_call = true
+                label_visibility = e.target.innerHTML
+                console.log(e.target.innerHTML);
+                let display;
+                document.querySelectorAll(".advanced_tab_btn_cont button").forEach((el) => {
+                    el.classList.remove("black_color");
+                })
+                if (e.target.innerHTML == "Show") {
+                    display = 'visible';
+                    e.target.classList.add('black_color')
+                    console.log(e);
+                } else {
+                    e.target.classList.add('black_color')
+                    // e.target.classList.remove('black_color')
+                    display = 'none';
+                }
+                map.setLayoutProperty('settlement-major-label', 'visibility', display);
+                map.setLayoutProperty('settlement-minor-label', 'visibility', display);
+                map.setLayoutProperty('natural-point-label', 'visibility', display);
+                map.setLayoutProperty('natural-line-label', 'visibility', display);
+                map.setLayoutProperty('water-line-label', 'visibility', display);
+                map.setLayoutProperty('waterway-label', 'visibility', display);
+                map.setLayoutProperty('waterway-label', 'visibility', display);
+                map.setLayoutProperty('poi-label', 'visibility', display);
+                map.setLayoutProperty('state-label', 'visibility', display);
+                map.setLayoutProperty('country-label', 'visibility', display);
+                map.setLayoutProperty('continent-label', 'visibility', display);
+                map.setLayoutProperty('airport-label', 'visibility', display);
+                map.setLayoutProperty('water-point-label', 'visibility', display);
+                map.setLayoutProperty('settlement-subdivision-label', 'visibility', display);
+                // map.setLayoutProperty('points', 'visibility', display);
+                map.setLayoutProperty('road-label-simple', 'visibility', display);
+
+            });
+        })
+        document.querySelectorAll(".advanced_tab_btn_cont1 button").forEach((ele) => {
+
+            ele.addEventListener("click", function (e) {
+                document.querySelectorAll(".advanced_tab_btn_cont1 button").forEach((el) => {
+                    el.classList.remove("black_color");
+                })
+                if (e.target.innerHTML == "Road") {
+                    console.log(e.target.innerHTML);
+                    map.setLayoutProperty('road-simple', 'visibility', 'visible');
+                    map.setLayoutProperty('building', 'visibility', 'none');
+                    e.target.classList.add('black_color')
+                }
+                else if (e.target.innerHTML == "Building") {
+                    console.log(e.target.innerHTML);
+                    map.setLayoutProperty('road-simple', 'visibility', 'none');
+                    map.setLayoutProperty('building', 'visibility', 'visible');
+                    e.target.classList.add('black_color')
+                } else {
+
+                    console.log(e.target.innerHTML);
+                    map.setLayoutProperty('road-simple', 'visibility', 'visible');
+                    map.setLayoutProperty('building', 'visibility', 'visible');
+                    e.target.classList.add('black_color')
+                }
+            })
+        })
+        let marker_icon;
+        let new_marker_icon;
+        document.querySelectorAll('.icon_cont i').forEach((ele) => {
+            ele.addEventListener('click', function (event) {
+                console.log(event.target)
+
+                document.querySelector('.over_element') != null ? [
+                    document.querySelector('.over_element').parentNode.removeChild(document.querySelector('.over_element'))
+                ] : null
+                marker_icon = event.target.outerHTML;
+                new_marker_icon = event.target.cloneNode(true)
+                new_marker_icon.classList.add('display_none');
+                // event.target.classList.add('over_element')
+                let element = event.target.cloneNode(true)
+                console.log(element)
+                // new_marker_icon = element;
+                element.classList.add('over_element')
+                // let wrapcont = `<div class='over_element'>${element}</div>`
+                document.body.appendChild(element)
+                document.body.classList.add('cursur_none')
+                document.querySelector('.mapboxgl-canvas').classList.add('cursur_none')
+                document.body.addEventListener('mousemove', myFunction)
+            })
+        })
+
+        function myFunction(e) {
+            e.target.id == 'v-pills-tab' || e.target.parentNode.id == 'v-pills-tab' ? document.querySelector('.over_element').classList.add('display_none') : document.querySelector('.over_element').classList.remove('display_none')
+            document.querySelector('.over_element').setAttribute('style', `top:${e.clientY - 25.5}px;left:${e.clientX - 11}px`)
+        }
+        var coordinates;
+        function add_marker(event) {
+            // console.log(event)
+            coordinates = event.lngLat;
+            // console.log(coordinates);
+            // console.log(event.originalEvent.target.nodeName)
+
+            document.body.appendChild(new_marker_icon)
+            // console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
+            marker.setLngLat(coordinates).addTo(map);
+            document.querySelector(".mapboxgl-marker").innerHTML = marker_icon == undefined ? '' : marker_icon + '<button class="marker_remove_btn"onclick="remove_marker()">x</button>'
+            event.originalEvent.target.nodeName == 'BUTTON' ? '' : [
+                document.querySelector(".mapboxgl-marker").classList.remove('display_none'),
+                document.querySelector('#icon_size_range').removeAttribute('disabled'),
+                document.querySelector('#icon_color_picker').removeAttribute('disabled')
+            ]
+
+
+        }
+        document.querySelectorAll('#v-pills-tab button').forEach((ele) => {
+            // console.log(ele)
+            ele.addEventListener('click', function (e) {
+                // console.log(e)
+                e.target.innerText == 'award_star' || e.target.innerText == 'award_star\nIcons' ? '' : [
+                    document.querySelector('.over_element') != null ? [
+                        document.body.removeEventListener('mousemove', myFunction),
+                        document.body.classList.remove('cursur_none'),
+                        document.querySelector('.mapboxgl-canvas').classList.remove('cursur_none'),
+                        document.querySelector('.over_element').parentNode.removeChild(document.querySelector('.over_element'))
+                    ] : null
+                ]
+            })
+        })
+        let freeze_cordi = true;
+        map.on('click', add_marker);
+        map.on('dragend', (e) => {
+            if (freeze_cordi) {
+                document.querySelectorAll('#map_text p')[1].innerHTML = convertDMS(map.getCenter().lng, map.getCenter().lat)
+                document.querySelectorAll(".label_input_cont form input")[2].value = convertDMS(map.getCenter().lng, map.getCenter().lat)
+            }
+
+            const marker_cont = document.querySelector(".mapboxgl-marker");
+            // console.log(marker_cont.parentElement.className)
+            marker_cont == null ? '' : [
+                marker_cont.parentElement.className == "mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate" ? marker_cont.classList.remove('display_none') : marker_cont.classList.add('display_none')
+            ]
+        });
+
+        function remove_marker() {
+            const marker_cont = document.querySelector(".mapboxgl-marker");
+            marker_cont.classList.add('display_none')
+            document.querySelector('#icon_size_range').setAttribute('disabled', 'disabled');
+            document.querySelector('#icon_color_picker').setAttribute('disabled', 'disabled');
+        }
+
+        // map_icon_manual_size
+        let icon_color
+        let icon_size;
+        document.querySelector('#icon_size_range').addEventListener('input', function (event) {
+            document.querySelector('.mapboxgl-marker i').style.fontSize = event.target.value + 'px'
+            icon_size = document.querySelector('.mapboxgl-marker i').style.fontSize;
+            // var style = document.createElement("style");
+            icon_color != undefined ? [
+                // new_marker_icon.classList.add('icon_font_size'),
+                new_marker_icon.setAttribute('style', `font-size:${icon_size}; color:${icon_color}`),
+                // document.styleSheets[2].cssText = `.icon_font_size {color:${icon_color}; font-size:${icon_size}}`,
+                document.body.appendChild(new_marker_icon)
+
+            ] : [
+                new_marker_icon.setAttribute('style', `font-size:${icon_size}`),
+                // new_marker_icon.classList.add('icon_font_size'),
+                // document.styleSheets[2].cssText=`.icon_font_size {font-size:${icon_size}}`,
+                document.body.appendChild(new_marker_icon)
+            ]
+        })
+        // map_icon_color_picker
+        document.querySelector('#icon_color_picker').addEventListener('input', function (event) {
+            document.querySelector('.mapboxgl-marker i').style.color = event.target.value;
+            console.log(event.target.value)
+            icon_color = event.target.value;
+            // var style = document.createElement("style");
+            icon_size != undefined ? [
+                // new_marker_icon.classList.add('icon_font_size'),
+                new_marker_icon.setAttribute('style', `font-size:${icon_size}; color:${icon_color}`),
+                // document.styleSheets[2].cssText =`.icon_font_size {color:${icon_color}; font-size:${icon_size}}`,
+                document.body.appendChild(new_marker_icon)
+            ] : [
+                new_marker_icon.setAttribute('style', `color:${icon_color}`),
+                // new_marker_icon.classList.add('icon_font_size'),
+                // document.styleSheets[2].cssText =`.icon_font_size {color:${icon_color}}`,
+                document.body.appendChild(new_marker_icon)
+
+            ]
+
+        })
+        document.querySelectorAll('.label_input_cont form input').forEach((ele) => {
+
+            ele.addEventListener('input', function (event) {
+                console.log(event.target.checked)
+                const target = event.target
+                if (target.name == 'city') {
+                    document.querySelector('#map_text h2').innerHTML = target.value.toUpperCase()
+                }
+                else if (target.name == 'country') {
+                    document.querySelectorAll('#map_text p')[0].innerHTML = target.value.toUpperCase()
+                }
+                else if (target.name == 'tagline') {
+                    document.querySelectorAll('#map_text p')[1].innerHTML = target.value
+                }
+                if (target.checked) {
+                    document.querySelectorAll('.label_input_cont form input')[2].setAttribute('disabled', 'disable')
+                    freeze_cordi = false;
+                } else if (target.checked == false) {
+                    document.querySelectorAll('.label_input_cont form input')[2].removeAttribute('disabled')
+                    freeze_cordi = true;
+                }
+
+            });
+        })
+
+
+
+    </script>
+    <script>
+        document.querySelector('.content_wrapper .map_print_btn').onclick = function () {
+            document.querySelector('.bottom-sheet-wrapper').classList.add('show-modal');
+        }
+
+        document.querySelector('.close').onclick = function () {
+            document.querySelector('.bottom-sheet-wrapper').classList.remove('show-modal');
+        }
+
+        document.querySelector('.backdrop').onclick = function () {
+            document.querySelector('.bottom-sheet-wrapper').classList.remove('show-modal');
+        }
+        
+        // $(document).ready(function() {
+            $('#cart_btn').click(function() {
+                $('.map_print_btn').click();
+                $('#generate-btn').click();
+
+                var d_canvas = document.getElementById("new_map");
+                var mapData = {
+                    MapImg: '',
+                    CityName:$('#headline_input').val(),
+                    CountryName:$('#divider_input').val(),
+                    Coordinates:$('#tagline_input').val(),
+                    DesignLayout:selected_layout_index,
+                };
+        
+                generateAndSetBase64(d_canvas, mapData);
+
+                var formData = {};
+                // $('#addtocart').find('.form_data').each(function() {
+                //     formData[this.name] = $(this).val();
+                // });
+
+                formData['MapImg'] = mapData.MapImg;
+                formData['CityName'] = mapData.CityName;
+                formData['CountryName'] = mapData.CountryName;
+                formData['Coordinates'] = mapData.Coordinates;
+                formData['DesignLayout'] = mapData.DesignLayout;
+
+
+
+
+                console.log('Form data:', formData);
+
+                var jsonData = JSON.stringify(formData);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'CityMap' %}",
+                    data: jsonData,
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function(response) {
+                        console.log('Data sent successfully:', response);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error('Error:', errorThrown);
+                    }
+                });
+            });
+        // });
+
+
+        $('.canvas-mapboxgl-container').hide()
+        map.on('load', function () {
+            $('.content_cont_loader').hide()
+            $('.canvas-mapboxgl-container').show()
+        })
+
+
+        $('.cart_btn').on('click', function(e) {
+            e.preventDefault();
+
+            
+        });
+
+    </script>
+
+
+</body>
+
+</html>
