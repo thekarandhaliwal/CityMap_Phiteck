@@ -27,7 +27,8 @@ def convert_html_to_pdf(request):
     pass
 
 
-def gelato_api
+def gelato_api(request):
     pass
+
 
 # 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
