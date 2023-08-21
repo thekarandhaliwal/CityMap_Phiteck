@@ -39,11 +39,11 @@ class CityMap(APIView):
 def convert_html_to_pdf(request):
     if request.method == 'POST':
 
-        entry_id = 3
+        entry_id = 5
 
         mapData = get_object_or_404(CityMapData, id=entry_id)
 
-        template = 'halo.html'
+        template = 'new.html'
 
         
         # if mapData.DesignLayout == '1':
@@ -67,6 +67,7 @@ def convert_html_to_pdf(request):
 
         options = {
             'enable-local-file-access': '',
+            'javascript-delay':5000,
             'page-size': 'A2',
             'margin-top': '15',
             'margin-right': '15',

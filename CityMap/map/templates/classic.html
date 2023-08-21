@@ -6,7 +6,14 @@
     <title>Document</title>
     <style>
 
-  
+.bottom {
+  position: fixed;
+  top: 88%;
+  left: 40% !important;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
     </style>
 </head>
 <body>
@@ -23,10 +30,10 @@ alt="">
 
 </div>
 <!-- </div> -->
-<div class="bottom" style="font-size: xx-large; border: 2px solid #000000; text-align: center; margin-top:100px; width: 20em; margin-left: 28em;">
-    <h1>{{CityName | safe}}</h1>
-    <h3>{{CountryName | safe }}</h3>
-    <h3>{{Coordinates | safe }}</h3>
+<div class="bottom" style="border: 2px solid #000000; background-color: #fff; text-align: center;  margin-top: -280px; margin-left: -280px;">
+    <h1 style="margin-bottom: -10px; font-size: 2em; margin-left: 20px; margin-right: 20px;">{{CityName | safe}}</h1>
+    <h3 style="font-size: 12px;">{{CountryName | safe }}</h3>
+    <h3 style="font-size: 12px;">{{Coordinates | safe }}</h3>
 </div>
 
 </body>
