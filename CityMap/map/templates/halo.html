@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+.bottom {
+  position: fixed;
+  top: 88%;
+  left: 40% !important;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+  
+    </style>
+</head>
+<body>
+   
+    <!-- w = 8, H = 11.4 -->
+
+<div class="container">
+
+<img 
+src=
+{{ MapImg | safe }}
+
+alt="">
+
+
+    <div class="bottom">
+    <h1 style="font-size:6em !important; margin-bottom: -20px !important;">{{CityName | safe}}</h1>
+    <h3 style="font-size:2em !important; ">{{CountryName | safe }}</h3>
+    <h3 style="font-size:2em !important;">{{Coordinates | safe }}</h3>
+</div>
+
+
+
+
+</body>
+</html>
+

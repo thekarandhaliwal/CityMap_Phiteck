@@ -36,83 +36,115 @@ class CityMap(APIView):
         data_return = CityMapDataSerializer(db, many=False, context={"request": request} )
         return Response(data_return.data)
 
-# def convert_html_to_pdf(request):
-#     if request.method == 'POST':
-#         # entry_id = 10
-#         # mapData = get_object_or_404(CityMapData, id=entry_id)
-        
-#         template = 'image.html'
-
-
-#         options = {
-#             'enable-local-file-access': '',
-#             'javascript-delay' : '5000',
-#             'margin-top': '0in',
-#             'margin-right': '0in',
-#             'margin-bottom': '0in',
-#             'margin-left': '0in',
-#             'copies' : 1,
-#             'no-outline': True,
-#             'dpi': 96,
-#             'encoding': "UTF-8",
-#         }
-
-#         # context = {
-#         #     'MapImg': mapData.MapImg,
-#         #     'CityName':mapData.CityName,
-#         # }
-
-#         # rendered_content = mapData.content.decode('utf-8')
-
-        
-#         # temp_pdf = loader.get_template(template)
-#         # html_data = temp_pdf.render(context=context)
-#         pdf = pdfkit.from_string(template, None, options=options)
-
-#         response = HttpResponse(content_type='application/pdf')
-#         response['Content-Disposition'] = 'attachment; filename=output.pdf'
-#         response.write(pdf)
-#         return response
-
-#     # return HttpResponse(status=200)
-#     return render(request, "index1.html")
-
-
-# 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
-
-
-
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-import pdfkit
-from django.conf import settings
-import os
-
-# config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
-
-
 def convert_html_to_pdf(request):
     if request.method == 'POST':
-        # file_path = os.path.join(settings.BASE_DIR, 'planet/templates/new.html')
-        rendered_template = render(request, 'image.html')
 
+        entry_id = 3
+
+        mapData = get_object_or_404(CityMapData, id=entry_id)
+
+        template = 'halo.html'
+
+        
+        # if mapData.DesignLayout == '1':
+        #     template = 'polar.html'
+
+        # elif mapData.DesignLayout == '2':
+        #     template = 'classic.html'
+
+        # elif mapData.DesignLayout == '3':
+        #     template = 'halo.html'
+
+        # elif mapData.DesignLayout =='4':
+        #     template = 'square.html'
+
+        # elif mapData.DesignLayout == '5':
+        #     template = 'card.html'
+            
+        # elif mapData.DesignLayout == '6':
+        #     template = 'architect.html'
 
 
         options = {
             'enable-local-file-access': '',
+            'page-size': 'A2',
+            'margin-top': '15',
+            'margin-right': '15',
+            'margin-bottom': '15',
+            'margin-left': '15',
+            'copies' : 1,
+            'no-outline': True,
+            'dpi': 300,
+            'encoding': "UTF-8",
         }
+
+        context = {
+            'CityName':mapData.CityName,
+            'CountryName' : mapData.CountryName,
+            'Coordinates' : mapData.Coordinates,
+            'MapImg': mapData.MapImg,
+        }
+
+        # rendered_content = mapData.content.decode('utf-8')
+
         
-        # with open(file_path, 'r') as file:
-        #     rendered_content = file.read()
-
-        rendered_content = rendered_template.content.decode('utf-8')
-
-        pdf = pdfkit.from_string(rendered_content, False, options=options)
+        temp_pdf = loader.get_template(template)
+        html_data = temp_pdf.render(context=context)
+        pdf = pdfkit.from_string(html_data, None, options=options)
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename=output.pdf'
         response.write(pdf)
         return response
 
-    return render(request, 'index1.html')
+    # return HttpResponse(status=200)
+    return render(request, "index1.html")
+
+
+# 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
+
+
+
+# from django.shortcuts import render
+# from django.http import HttpResponse
+# from django.template.loader import render_to_string
+# import pdfkit
+# from django.conf import settings
+# import os
+
+# # config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+
+
+# def convert_html_to_pdf(request):
+#     if request.method == 'POST':
+#         # file_path = os.path.join(settings.BASE_DIR, 'planet/templates/new.html')
+#         rendered_template = render(request, 'polar.html')
+
+        
+
+
+
+#         options = {
+#             'enable-local-file-access': '',
+#             'page-size': 'A2',
+#             'margin-top': '10',
+#             'margin-right': '10',
+#             'margin-bottom': '10',
+#             'margin-left': '10',
+#             'no-outline': True,
+#             'dpi':300,
+#         }
+        
+#         # with open(file_path, 'r') as file:
+#         #     rendered_content = file.read()
+
+#         rendered_content = rendered_template.content.decode('utf-8')
+
+#         pdf = pdfkit.from_string(rendered_content, False, options=options)
+
+#         response = HttpResponse(content_type='application/pdf')
+#         response['Content-Disposition'] = 'attachment; filename=output.pdf'
+#         response.write(pdf)
+#         return response
+
+#     return render(request, 'index1.html')
