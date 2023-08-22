@@ -39,11 +39,11 @@ class CityMap(APIView):
 def convert_html_to_pdf(request):
     if request.method == 'POST':
 
-        entry_id = 5
+        entry_id = 1
 
         mapData = get_object_or_404(CityMapData, id=entry_id)
 
-        template = 'new.html'
+        template = 'test.html'
 
         
         # if mapData.DesignLayout == '1':
@@ -77,6 +77,7 @@ def convert_html_to_pdf(request):
             'no-outline': True,
             'dpi': 300,
             'encoding': "UTF-8",
+            # 'zoom': 4,
         }
 
         context = {
