@@ -22,6 +22,6 @@ from map import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index, name="Index"),
-    path('CityMap', views.CityMap.as_view(), name="CityMap"),
     path('convert_html_to_pdf', convert_html_to_pdf, name="convert_html_to_pdf"),
+    path('CityMap', views.CityMap.as_view(), name="CityMap"),
 ]

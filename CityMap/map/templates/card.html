@@ -18,15 +18,18 @@
 
         <img src={{ MapImg | safe }} alt="">
 
-        <!-- w = 8, H = 10 -->
+        <!-- w = 8, H = 10.3 -->
 
     </div>
     <!-- </div> -->
-    <div class="bottom" style="font-size: xx-large; margin-top:130px; width: 40em;">
-        <p><span style="font-size:3em;">{{CityName | safe}}</span>
-            {{CountryName | safe }}
-            {{Coordinates | safe }}</p>
+    <div class="bottom" style="float:left;">
+        <p style="font-size:6em;"> {{CityName | safe}}</p>
     </div>
+    <div class="ba" style="float:right; margin-top: 50px;" >
+    <p style="font-size: 2em; "> {{CountryName | safe }}</p>
+     <p style="font-size: 2em;"> {{Coordinates | safe }}</p>
+    </div>
+    
 
 </body>
 
