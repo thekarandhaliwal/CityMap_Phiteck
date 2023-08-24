@@ -5,43 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-
-.bottom {
-  position: fixed;
-  top: 98.1%;
-  left: 64.1% !important;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
+        .bottom {
+        position: fixed;
+        top: 98.1%;
+        left: 64.1% !important;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        }
     </style>
 </head>
 <body>
-   
-
 <div class="container">
-
-<img 
+<img
 src=
 {{ MapImg | safe }}
-
 alt="">
-
-
 </div>
-<!-- </div> -->
-<!-- <div class="bottom" style="border: 2px solid #000000; background-color: #fff; text-align: center; margin-top: -218px; margin-left: 310px;">
-    <h1 style="margin-bottom: -30px; font-size: 6em; margin-left: 20px; margin-right: 20px;">{{CityName | safe}}</h1>
-    <h3 style="font-size: 12px;">{{CountryName | safe }}</h3>
-    <h3 style="font-size: 12px;">{{Coordinates | safe }}</h3>
-</div> -->
-
-<div class="bottom" style="border: 4px solid #000000; background-color: #fff; text-align: center;  margin-top: -280px;">
-    <h1 style="margin-bottom: -30px; font-size: 6em; margin-left: 100px; margin-right: 100px;">{{CityName | safe}}</h1>
-    <h3 style="font-size: 2em;">{{CountryName | safe }}</h3>
-    <h3 style="font-size: 2em;">{{Coordinates | safe }}</h3>
-</div>
-
+    <div class="bottom" style="border: 4px solid #000000; background-color: #fff; text-align: center;  margin-top: -280px;">
+        <h1 style="margin-bottom: -30px; font-size: 6em; margin-left: 100px; margin-right: 100px;">{{CityName | safe}}</h1>
+        <h3 style="font-size: 2em;">{{CountryName | safe }}</h3>
+        <h3 style="font-size: 2em;">{{Coordinates | safe }}</h3>
+    </div>
 </body>
 </html>
 

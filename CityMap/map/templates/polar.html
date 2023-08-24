@@ -5,102 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-
-        /* element.style { */
-    /* width: 483px;
-    height: 742px;
-    margin: 10px auto;
-    overflow: inherit; */
-/* } */
-/* #map {
-    top: 0;
-    bottom: 0;
-    position: relative;
-}
-#map {
-    width: 100% !important;
-    height: 100% !important;
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-}
-.mapboxgl-map {
-    -webkit-tap-highlight-color: rgb(0 0 0/0);
-    font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
-    overflow: hidden;
-    position: relative;
-}
-.mapboxgl-map {
-    font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
-    overflow: hidden;
-    position: relative;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-.mapboxgl-map {
-    -webkit-tap-highlight-color: rgb(0 0 0/0);
-    font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
-    overflow: hidden;
-    position: relative;
-}
-*, ::after, ::before {
-    box-sizing: border-box;
-}
-user agent stylesheet
-div {
-    display: block;
-} */
-html, body {
-    /* margin: 0px; */
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    height: 100%;
-    text-align: center;
-}
-/* body {
-    margin: 0;
-    font-family: var(--bs-body-font-family);
-    font-size: var(--bs-body-font-size);
-    font-weight: var(--bs-body-font-weight);
-    line-height: var(--bs-body-line-height);
-    color: var(--bs-body-color);
-    text-align: var(--bs-body-text-align);
-    background-color: var(--bs-body-bg);
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-}
-
-#imageCanvas {
-    display: block;
-    margin: auto;
-    height: 735px;
-    position: absolute;
-    z-index: 2;
-    left: -12px;
-    aspect-ratio: 1/1.4;
-    background-color: #ffffff;
-} */
-
-
+    html, body {
+        /* margin: 0px; */
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        height: 100%;
+        text-align: center;
+    }
     </style>
 </head>
 <body>
-    
-    <!-- <div class="container" id="map" style="margin:10px auto;overflow: inherit;" class="mapboxgl-map"> -->
-        <!-- width: 483px;height:742px; -->
-        <!-- <div id="imageCanvas" class="shadow"style="color: #fff;"> -->
    <!-- H - 10 -->
 <div class="container">
 <img src=
 {{ MapImg | safe }}
  alt=""
  >
-
 </div>
-<!-- </div> -->
-<div class="map_over_text map_over_text_bg_color text_color_dark" id="map_text">
-    <h1 style="margin-bottom: -30px; margin-top: 170px !important; font-size: 6em;">{{CityName | safe}}</h1>
-    <h3 style="font-size: 2em;">{{CountryName | safe }}</h3>
-    <h3 style="font-size: 2em;">{{Coordinates | safe }}</h3>
-</div>
-
+    <div class="map_over_text map_over_text_bg_color text_color_dark" id="map_text">
+        <h1 style="margin-bottom: -30px; margin-top: 170px !important; font-size: 6em;">{{CityName | safe}}</h1>
+        <h3 style="font-size: 2em;">{{CountryName | safe }}</h3>
+        <h3 style="font-size: 2em;">{{Coordinates | safe }}</h3>
+    </div>
 </body>
 </html>
